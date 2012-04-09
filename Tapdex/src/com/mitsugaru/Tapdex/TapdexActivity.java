@@ -34,12 +34,18 @@ public class TapdexActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		Intent intent;
 		switch (item.getItemId())
 		{
+			case R.id.newform:
+				intent = new Intent(findViewById(android.R.id.content)
+						.getContext(), NewFormActivity.class);
+				startActivity(intent);
+				return true;
 			case R.id.camera:
 				//TODO put this elsewhere, sorta
 				// show dialog of download
-				Intent intent = new Intent(findViewById(android.R.id.content)
+				intent = new Intent(findViewById(android.R.id.content)
 						.getContext(), CameraPreview.class);
 				startActivity(intent);
 				return true;

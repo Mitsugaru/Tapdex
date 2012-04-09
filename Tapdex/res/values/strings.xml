@@ -4,5 +4,7 @@
     <string name="hello">Hello World, TapdexActivity!</string>
     <string name="app_name">Tapdex</string>
     <string name="camera_alert">No other camera available.</string>
+    <string name="newform_name">Form Name</string>
+    <string name="newform_addfield">Add Field</string>
 
 </resources>
