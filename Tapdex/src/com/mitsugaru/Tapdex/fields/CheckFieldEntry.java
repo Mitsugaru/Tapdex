@@ -98,6 +98,7 @@ public class CheckFieldEntry extends FieldEntry
 		});
 		label.setText(name);
 		checkbox = (CheckBox) rootView.findViewById(R.id.checkBox);
+		checkbox.setChecked(checked);
 		return rootView;
 	}
 	
