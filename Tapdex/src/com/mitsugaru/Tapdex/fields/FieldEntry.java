@@ -67,6 +67,10 @@ public abstract class FieldEntry
 		 */
 		CHECK(CheckFieldEntry.class),
 		/**
+		 * NOTE
+		 */
+		SPINNER(SpinnerFieldEntry.class),
+		/**
 		 * Miscellaneous Field
 		 */
 		FIXED_ENTRY(FieldEntry.class);
