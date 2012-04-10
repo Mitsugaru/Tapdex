@@ -1,55 +1,56 @@
 package com.mitsugaru.Tapdex.fields;
 
 import com.mitsugaru.Tapdex.R;
-import com.mitsugaru.Tapdex.TapdexActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class TextFieldEntry extends FieldEntry
+public class CheckFieldEntry extends FieldEntry
 {
-	private String		entry	= "";
-	private TextView label = null;
-	private EditText	field	= null;
+	private TextView	label		= null;
+	private boolean		checked		= false;
+	private CheckBox	checkbox	= null;
 	
-	public TextFieldEntry(String title, Context context, FieldEntryAdapter adapter)
+	public CheckFieldEntry(String title, Context context,
+			FieldEntryAdapter adapter)
 	{
-		super(Type.TEXT, title, context, adapter);
+		super(Type.CHECK, title, context, adapter);
 	}
 	
-	public TextFieldEntry(String title, Context context, FieldEntryAdapter adapter, String entry)
+	public CheckFieldEntry(String title, Context context,
+			FieldEntryAdapter adapter, boolean check)
 	{
-		super(Type.TEXT, title, context, adapter);
-		this.entry = entry;
+		super(Type.CHECK, title, context, adapter);
+		this.checked = check;
 	}
 	
-	public String getEntry()
+	public boolean isChecked()
 	{
-		return entry;
+		return checked;
+	}
+	
+	public void setChecked(boolean c)
+	{
+		this.checked = c;
+		if (checkbox != null)
+		{
+			checkbox.setChecked(c);
+		}
 	}
 	
 	public void setLabel(String text)
 	{
 		setName(text);
-		if(label != null)
+		if (label != null)
 		{
 			label.setText(text);
-		}
-	}
-	
-	public void setEntry(String text)
-	{
-		this.entry = text;
-		if (field != null)
-		{
-			field.setText(text);
 		}
 	}
 	
@@ -58,8 +59,8 @@ public class TextFieldEntry extends FieldEntry
 	{
 		final LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rootView = inflater.inflate(R.layout.textfieldentry, null);
-		label = (TextView) rootView.findViewById(R.id.textTitle);
+		View rootView = inflater.inflate(R.layout.checkfieldentry, null);
+		label = (TextView) rootView.findViewById(R.id.checkTitle);
 		label.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -96,9 +97,8 @@ public class TextFieldEntry extends FieldEntry
 			}
 		});
 		label.setText(name);
-		field = (EditText) rootView.findViewById(R.id.textField);
-		field.setText(entry);
-		// TODO listeners?
+		checkbox = (CheckBox) rootView.findViewById(R.id.checkBox);
 		return rootView;
 	}
+	
 }

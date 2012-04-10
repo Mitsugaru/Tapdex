@@ -3,8 +3,10 @@ package com.mitsugaru.Tapdex;
 import java.util.ArrayList;
 
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.mitsugaru.Tapdex.fields.CheckFieldEntry;
 import com.mitsugaru.Tapdex.fields.FieldEntry;
 import com.mitsugaru.Tapdex.fields.FieldEntryAdapter;
+import com.mitsugaru.Tapdex.fields.RatingFieldEntry;
 import com.mitsugaru.Tapdex.fields.TextFieldEntry;
 
 import android.app.Activity;
@@ -18,7 +20,7 @@ import android.widget.Button;
 
 public class NewFormActivity extends ListActivity
 {
-	private static final CharSequence[] fields = new CharSequence[]{"Text"};
+	private static final CharSequence[] fields = new CharSequence[]{"Text","Rating","Checkbox"};
 	private final Activity activity = this;
 	private ArrayList<FieldEntry> entries = new ArrayList<FieldEntry>();
 	private FieldEntryAdapter entryAdapter = null;
@@ -58,8 +60,18 @@ public class NewFormActivity extends ListActivity
 				String field = fields[item].toString();
 				if(field.equalsIgnoreCase("text"))
 				{
-					TextFieldEntry t = new TextFieldEntry("Title" + count, activity);
+					TextFieldEntry t = new TextFieldEntry("Title" + count, activity, entryAdapter);
 					entryAdapter.add(t);
+				}
+				else if(field.equalsIgnoreCase("rating"))
+				{
+					RatingFieldEntry r = new RatingFieldEntry("Rate" + count, activity, entryAdapter);
+					entryAdapter.add(r);
+				}
+				else if(field.equalsIgnoreCase("checkbox"))
+				{
+					CheckFieldEntry c = new CheckFieldEntry("Check" + count, activity, entryAdapter);
+					entryAdapter.add(c);
 				}
 				count++;
 			}

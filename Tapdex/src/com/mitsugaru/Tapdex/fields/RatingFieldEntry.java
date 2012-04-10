@@ -1,38 +1,32 @@
 package com.mitsugaru.Tapdex.fields;
 
 import com.mitsugaru.Tapdex.R;
-import com.mitsugaru.Tapdex.TapdexActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
-public class TextFieldEntry extends FieldEntry
+public class RatingFieldEntry extends FieldEntry
 {
-	private String		entry	= "";
 	private TextView label = null;
-	private EditText	field	= null;
+	private RatingBar rating = null;
+	private float value = 0f;
 	
-	public TextFieldEntry(String title, Context context, FieldEntryAdapter adapter)
+	public RatingFieldEntry(String title, Context context, FieldEntryAdapter adapter)
 	{
-		super(Type.TEXT, title, context, adapter);
+		super(Type.RATING, title, context, adapter);
 	}
 	
-	public TextFieldEntry(String title, Context context, FieldEntryAdapter adapter, String entry)
+	public RatingFieldEntry(String title, Context context, FieldEntryAdapter adapter, float value)
 	{
 		super(Type.TEXT, title, context, adapter);
-		this.entry = entry;
-	}
-	
-	public String getEntry()
-	{
-		return entry;
+		this.value = value;
 	}
 	
 	public void setLabel(String text)
@@ -44,12 +38,12 @@ public class TextFieldEntry extends FieldEntry
 		}
 	}
 	
-	public void setEntry(String text)
+	public void setRating(float value)
 	{
-		this.entry = text;
-		if (field != null)
+		this.value = value;
+		if(rating != null)
 		{
-			field.setText(text);
+			rating.setRating(value);
 		}
 	}
 	
@@ -58,8 +52,8 @@ public class TextFieldEntry extends FieldEntry
 	{
 		final LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rootView = inflater.inflate(R.layout.textfieldentry, null);
-		label = (TextView) rootView.findViewById(R.id.textTitle);
+		View rootView = inflater.inflate(R.layout.ratingfieldentry, null);
+		label = (TextView) rootView.findViewById(R.id.ratingTitle);
 		label.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -96,9 +90,9 @@ public class TextFieldEntry extends FieldEntry
 			}
 		});
 		label.setText(name);
-		field = (EditText) rootView.findViewById(R.id.textField);
-		field.setText(entry);
-		// TODO listeners?
+		rating = (RatingBar) rootView.findViewById(R.id.ratingBar);
+		rating.setRating(value);
 		return rootView;
 	}
+	
 }
