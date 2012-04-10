@@ -1,5 +1,6 @@
 package com.mitsugaru.Tapdex;
 
+import com.commonsware.cwac.merge.MergeAdapterDemo;
 import com.example.android.apis.graphics.CameraPreview;
 
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 public class TapdexActivity extends Activity {
 	//Class variables
 	private final Activity activity = this;
+	public static final String TAG = "TAPDEX";
 	
     /** Called when the activity is first created. */
     @Override
@@ -37,7 +39,13 @@ public class TapdexActivity extends Activity {
 		Intent intent;
 		switch (item.getItemId())
 		{
+			case R.id.mergeact:
+				intent = new Intent(findViewById(android.R.id.content)
+						.getContext(), MergeAdapterDemo.class);
+				startActivity(intent);
+				return true;
 			case R.id.newform:
+				//Show new form activity
 				intent = new Intent(findViewById(android.R.id.content)
 						.getContext(), NewFormActivity.class);
 				startActivity(intent);
