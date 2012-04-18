@@ -2,11 +2,7 @@ package com.mitsugaru.Tapdex.fields;
 
 import java.util.ArrayList;
 
-import com.mitsugaru.Tapdex.R;
-import com.mitsugaru.Tapdex.fields.FieldEntry.Type;
-
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
