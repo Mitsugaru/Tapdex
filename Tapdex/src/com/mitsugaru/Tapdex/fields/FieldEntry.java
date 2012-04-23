@@ -1,5 +1,7 @@
 package com.mitsugaru.Tapdex.fields;
 
+import java.util.Map;
+
 import com.mitsugaru.Tapdex.TapdexActivity;
 
 import android.content.Context;
@@ -92,4 +94,6 @@ public abstract class FieldEntry {
     }
 
     public abstract View expandView();
+    
+    public abstract Map<String, Object> getData();
 }

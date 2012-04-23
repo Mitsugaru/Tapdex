@@ -15,9 +15,18 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ListView;
 
 public class NewFormActivity extends ListActivity {
     private static final CharSequence[] fields = new CharSequence[] { "Text",
@@ -43,11 +52,31 @@ public class NewFormActivity extends ListActivity {
 		showAddFieldDialog();
 	    }
 	});
+	//Adapters
 	adapter = new MergeAdapter();
 	entryAdapter = new FieldEntryAdapter(activity,
 		android.R.layout.simple_list_item_1, entries);
 	adapter.addAdapter(entryAdapter);
 	setListAdapter(adapter);
+	// Animations
+	AnimationSet set = new AnimationSet(true);
+
+	Animation animation = new AlphaAnimation(0.0f, 1.0f);
+	animation.setDuration(50);
+	set.addAnimation(animation);
+
+	animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+		Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+		-1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+	animation.setDuration(100);
+	set.addAnimation(animation);
+
+	LayoutAnimationController controller = new LayoutAnimationController(
+		set, 0.5f);
+	ListView listView = getListView();
+	listView.setLayoutAnimation(controller);
+	//TODO Database
+	//db = new DatabaseHandler(this);
     }
 
     private void showAddFieldDialog() {
@@ -72,8 +101,8 @@ public class NewFormActivity extends ListActivity {
 		} else if (field.equalsIgnoreCase("spinner")) {
 		    final ArrayList<String> list = new ArrayList<String>();
 		    list.add("item1");
-		    SpinnerFieldEntry n = new SpinnerFieldEntry("Note" + count,
-			    activity, entryAdapter, list);
+		    SpinnerFieldEntry n = new SpinnerFieldEntry("Spinner"
+			    + count, activity, entryAdapter, list);
 		    entryAdapter.add(n);
 		}
 		count++;
@@ -81,5 +110,24 @@ public class NewFormActivity extends ListActivity {
 	});
 	AlertDialog alert = builder.create();
 	alert.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+	// Now, inflate our submenu.
+	MenuInflater inflater = new MenuInflater(this);
+	inflater.inflate(R.menu.newformmenu, menu);
+	return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.createForm: {
+	    return true;
+	}
+	default:
+	    return true;
+	}
     }
 }

@@ -1,26 +1,64 @@
 package com.mitsugaru.Tapdex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.android.apis.graphics.CameraPreview;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
-public class TapdexActivity extends Activity {
+public class TapdexActivity extends ListActivity {
     // Class variables
     private final Activity activity = this;
     public static final String TAG = "TAPDEX";
+    private DatabaseHandler database;
+    private List<String> formNames = new ArrayList<String>();
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.main);
+	// Database
+	database = new DatabaseHandler(this);
+	// Adapter
+	formNames = database.getFormNames();
+	ListAdapter adapter = new ArrayAdapter<String>(this,
+		android.R.layout.simple_list_item_1, formNames);
+	setListAdapter(adapter);
+	// Animation
+	AnimationSet set = new AnimationSet(true);
+
+	Animation animation = new AlphaAnimation(0.0f, 1.0f);
+	animation.setDuration(50);
+	set.addAnimation(animation);
+
+	animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+		Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+		-1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+	animation.setDuration(100);
+	set.addAnimation(animation);
+
+	LayoutAnimationController controller = new LayoutAnimationController(
+		set, 0.5f);
+	ListView listView = getListView();
+	listView.setLayoutAnimation(controller);
     }
 
     @Override

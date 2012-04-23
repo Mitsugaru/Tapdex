@@ -1,6 +1,8 @@
 package com.mitsugaru.Tapdex.fields;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.mitsugaru.Tapdex.R;
 
@@ -11,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -183,7 +187,37 @@ public class SpinnerFieldEntry extends FieldEntry {
 	    }
 	});
 	spinner.setSelection(position);
+	spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+	    @Override
+	    public void onItemSelected(AdapterView<?> arg0, View arg1,
+		    int pos, long arg3) {
+		position = pos;
+	    }
+
+	    @Override
+	    public void onNothingSelected(AdapterView<?> arg0) {
+		// IGNORE?
+	    }
+	});
 	return rootView;
     }
 
+    public Map<String, Object> getData() {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("type", getType().name());
+	if (!list.isEmpty()) {
+	    StringBuilder sb = new StringBuilder();
+	    for (String entry : list) {
+		sb.append(entry + "&");
+	    }
+	    // Remove trailing ampersand
+	    sb.deleteCharAt(sb.length() - 1);
+	    data.put("list", sb.toString());
+	} else {
+	    data.put("list", "");
+	}
+	data.put("position", position);
+	return data;
+    }
 }

@@ -1,5 +1,8 @@
 package com.mitsugaru.Tapdex.fields;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mitsugaru.Tapdex.R;
 
 import android.app.AlertDialog;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
 public class RatingFieldEntry extends FieldEntry {
@@ -83,7 +87,22 @@ public class RatingFieldEntry extends FieldEntry {
 	label.setText(name);
 	rating = (RatingBar) rootView.findViewById(R.id.ratingBar);
 	rating.setRating(value);
+	rating.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+	    
+	    @Override
+	    public void onRatingChanged(RatingBar ratingBar, float rating,
+		    boolean fromUser) {
+		value = rating;
+	    }
+	});
 	return rootView;
     }
 
+    public Map<String, Object> getData()
+    {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("type", getType().name());
+	data.put("value", value);
+	return data;
+    }
 }

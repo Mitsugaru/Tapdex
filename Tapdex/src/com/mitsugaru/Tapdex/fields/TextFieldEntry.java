@@ -1,12 +1,15 @@
 package com.mitsugaru.Tapdex.fields;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mitsugaru.Tapdex.R;
-import com.mitsugaru.Tapdex.TapdexActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -88,7 +91,36 @@ public class TextFieldEntry extends FieldEntry {
 	label.setText(name);
 	field = (EditText) rootView.findViewById(R.id.textField);
 	field.setText(entry);
-	// TODO listeners?
+	field.addTextChangedListener(new TextWatcher(){
+
+	    @Override
+	    public void afterTextChanged(Editable editable) {
+		entry = editable.toString();
+	    }
+
+	    @Override
+	    public void beforeTextChanged(CharSequence arg0, int arg1,
+		    int arg2, int arg3) {
+		// TODO Auto-generated method stub
+		
+	    }
+
+	    @Override
+	    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+		    int arg3) {
+		// TODO Auto-generated method stub
+		
+	    }
+	    
+	});
 	return rootView;
+    }
+    
+    public Map<String, Object> getData()
+    {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("type", getType().name());
+	data.put("text", entry);
+	return data;
     }
 }

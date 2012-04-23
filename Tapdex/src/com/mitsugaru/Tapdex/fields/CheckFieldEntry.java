@@ -1,5 +1,8 @@
 package com.mitsugaru.Tapdex.fields;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mitsugaru.Tapdex.R;
 
 import android.app.AlertDialog;
@@ -11,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CheckFieldEntry extends FieldEntry {
     private TextView label = null;
@@ -87,7 +91,33 @@ public class CheckFieldEntry extends FieldEntry {
 	label.setText(name);
 	checkbox = (CheckBox) rootView.findViewById(R.id.checkBox);
 	checkbox.setChecked(checked);
+	checkbox.setOnClickListener(new OnClickListener(){
+
+	    @Override
+	    public void onClick(View arg0) {
+		if(checkbox.isChecked())
+		{
+		    Toast toast = Toast.makeText(context, "disabled", Toast.LENGTH_SHORT);
+		    toast.show();
+		    checked = false;
+		}
+		else
+		{
+		    Toast toast = Toast.makeText(context, "enabled", Toast.LENGTH_SHORT);
+		    toast.show();
+		    checked = true;
+		}
+	    }
+	    
+	});
 	return rootView;
     }
 
+    public Map<String, Object> getData()
+    {
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("type", getType().name());
+	data.put("checked", checked);
+	return data;
+    }
 }
