@@ -2,8 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/newform" android:title="New Form"></item><item android:id="@+id/camera" android:title="Camera"></item><item android:id="@+id/settings" android:title="Settings"></item>
     
-    
-    <item android:id="@+id/mergeact" android:title="Merge"></item>
-    
 
 </menu>

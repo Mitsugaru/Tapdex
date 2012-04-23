@@ -19,72 +19,67 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class NewFormActivity extends ListActivity
-{
-	private static final CharSequence[] fields = new CharSequence[]{"Text","Rating","Checkbox","Spinner"};
-	private final Activity activity = this;
-	private ArrayList<FieldEntry> entries = new ArrayList<FieldEntry>();
-	private FieldEntryAdapter entryAdapter = null;
-	private MergeAdapter adapter=null;
-	private int count = 0;
-	
-	/** Called when the activity is first created. */
+public class NewFormActivity extends ListActivity {
+    private static final CharSequence[] fields = new CharSequence[] { "Text",
+	    "Rating", "Checkbox", "Spinner" };
+    private final Activity activity = this;
+    private ArrayList<FieldEntry> entries = new ArrayList<FieldEntry>();
+    private FieldEntryAdapter entryAdapter = null;
+    private MergeAdapter adapter = null;
+    private int count = 0;
+
+    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.newform);
-        /**
-         * Set button to show dialog
-         */
-        Button button = (Button) findViewById(R.id.newFormAddFieldButton);
-        button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v)
-			{
-				showAddFieldDialog();
-			}
-		});
-        adapter=new MergeAdapter();
-        entryAdapter = new FieldEntryAdapter(activity, android.R.layout.simple_list_item_1, entries);
-        adapter.addAdapter(entryAdapter);
-        setListAdapter(adapter);
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.newform);
+	/**
+	 * Set button to show dialog
+	 */
+	Button button = (Button) findViewById(R.id.newFormAddFieldButton);
+	button.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		showAddFieldDialog();
+	    }
+	});
+	adapter = new MergeAdapter();
+	entryAdapter = new FieldEntryAdapter(activity,
+		android.R.layout.simple_list_item_1, entries);
+	adapter.addAdapter(entryAdapter);
+	setListAdapter(adapter);
     }
-    
-    private void showAddFieldDialog()
-    {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Fields");
-		builder.setItems(fields, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int item)
-			{
-				//TODO add fields
-				String field = fields[item].toString();
-				if(field.equalsIgnoreCase("text"))
-				{
-					TextFieldEntry t = new TextFieldEntry("Title" + count, activity, entryAdapter);
-					entryAdapter.add(t);
-				}
-				else if(field.equalsIgnoreCase("rating"))
-				{
-					RatingFieldEntry r = new RatingFieldEntry("Rate" + count, activity, entryAdapter);
-					entryAdapter.add(r);
-				}
-				else if(field.equalsIgnoreCase("checkbox"))
-				{
-					CheckFieldEntry c = new CheckFieldEntry("Check" + count, activity, entryAdapter);
-					entryAdapter.add(c);
-				}
-				else if(field.equalsIgnoreCase("spinner"))
-				{
-					final ArrayList<String> list = new ArrayList<String>();
-					list.add("item1");
-					SpinnerFieldEntry n = new SpinnerFieldEntry("Note" + count, activity, entryAdapter, list);
-					entryAdapter.add(n);
-				}
-				count++;
-			}
-		});
-		AlertDialog alert = builder.create();
-		alert.show();
+
+    private void showAddFieldDialog() {
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	builder.setTitle("Fields");
+	builder.setItems(fields, new DialogInterface.OnClickListener() {
+	    public void onClick(DialogInterface dialog, int item) {
+		// TODO add fields
+		String field = fields[item].toString();
+		if (field.equalsIgnoreCase("text")) {
+		    TextFieldEntry t = new TextFieldEntry("Title" + count,
+			    activity, entryAdapter);
+		    entryAdapter.add(t);
+		} else if (field.equalsIgnoreCase("rating")) {
+		    RatingFieldEntry r = new RatingFieldEntry("Rate" + count,
+			    activity, entryAdapter);
+		    entryAdapter.add(r);
+		} else if (field.equalsIgnoreCase("checkbox")) {
+		    CheckFieldEntry c = new CheckFieldEntry("Check" + count,
+			    activity, entryAdapter);
+		    entryAdapter.add(c);
+		} else if (field.equalsIgnoreCase("spinner")) {
+		    final ArrayList<String> list = new ArrayList<String>();
+		    list.add("item1");
+		    SpinnerFieldEntry n = new SpinnerFieldEntry("Note" + count,
+			    activity, entryAdapter, list);
+		    entryAdapter.add(n);
+		}
+		count++;
+	    }
+	});
+	AlertDialog alert = builder.create();
+	alert.show();
     }
 }

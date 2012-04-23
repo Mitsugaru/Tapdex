@@ -47,6 +47,7 @@ import java.util.List;
  * adapters (e.g., SectionedAdapter) that might have an
  * arbitrary number of rows, so it all appears seamless.
  */
+@SuppressWarnings("unused")
 public class SackOfViewsAdapter extends BaseAdapter {
   private List<View> views=null;
 

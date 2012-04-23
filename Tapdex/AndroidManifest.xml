@@ -22,7 +22,6 @@
         </activity>
         <activity android:name="com.example.android.apis.graphics.CameraPreview" android:screenOrientation="landscape"></activity>
         <activity android:name="NewFormActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="com.commonsware.cwac.merge.MergeAdapterDemo"></activity>
     </application>
 
 </manifest>
