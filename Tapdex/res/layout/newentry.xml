@@ -7,13 +7,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
+
         <EditText
             android:id="@+id/newEntryName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
+            android:inputType="text"
+            android:singleLine="true"
             android:text="@string/newform_entry" >
 
             <requestFocus />

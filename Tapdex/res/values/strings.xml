@@ -7,5 +7,6 @@
     <string name="newform_name">Form Name</string>
     <string name="newform_addfield">Add Field</string>
     <string name="newform_entry">Entry Name</string>
+    <string name="largetext">Large Text</string>
 
 </resources>
