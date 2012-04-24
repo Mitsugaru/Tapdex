@@ -96,11 +96,11 @@ public class CheckFieldEntry extends FieldEntry {
 	    public void onClick(View arg0) {
 		if(!checkbox.isChecked())
 		{
-		    checked = false;
+		    checked = true;
 		}
 		else
 		{
-		    checked = true;
+		    checked = false;
 		}
 	    }
 	    

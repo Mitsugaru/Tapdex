@@ -116,8 +116,10 @@ public class FormListActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
 	case R.id.addEntry: {
-	    // TODO show activity like new form, but already populated with
-	    // fields
+	    Intent intent = new Intent(getBaseContext(),
+		    NewEntryActivity.class);
+	    intent.putExtra("formName", formName);
+	    startActivity(intent);
 	    return true;
 	}
 	default: {

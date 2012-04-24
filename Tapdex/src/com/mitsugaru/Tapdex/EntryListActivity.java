@@ -143,28 +143,4 @@ public class EntryListActivity extends ListActivity {
 	    index++;
 	}
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-	// Now, inflate our submenu.
-	MenuInflater inflater = new MenuInflater(this);
-	inflater.inflate(R.menu.entrymenu, menu);
-	return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-	switch (item.getItemId()) {
-	case R.id.createEntry:
-	{
-	    Intent intent = new Intent(getBaseContext(),
-		    NewEntryActivity.class);
-	    intent.putExtra("formName", formName);
-	    startActivity(intent);
-	    return true;
-	}
-	default:
-	    return false;
-	}
-    }
 }
