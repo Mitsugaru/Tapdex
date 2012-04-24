@@ -22,7 +22,9 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Size;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +36,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 // Need the following import to get access to the app resources, since this
@@ -46,6 +50,7 @@ public class CameraPreview extends Activity {
     Camera mCamera;
     int numberOfCameras;
     int cameraCurrentlyLocked;
+    private Activity activity = this;
 
     // The first rear facing camera
     int defaultCameraId;
@@ -112,6 +117,26 @@ public class CameraPreview extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
 	// Handle item selection
 	switch (item.getItemId()) {
+	case R.id.takePicture:
+	    mCamera.autoFocus(new Camera.AutoFocusCallback() {
+		Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+		    public void onShutter() {
+			// Play your sound here.
+		    }
+		};
+
+		public void onAutoFocus(boolean success, Camera camera) {
+		    camera.takePicture(shutterCallback, null,
+			    new Camera.PictureCallback() {
+				public void onPictureTaken(byte[] data,
+					Camera camera) {
+				    new SavePhotoTask(activity).execute(data);
+				    camera.startPreview();
+				}
+			    });
+		}
+	    });
+	    return true;
 	case R.id.switch_cam:
 	    // check for availability of multiple cameras
 	    if (numberOfCameras == 1) {
@@ -146,6 +171,42 @@ public class CameraPreview extends Activity {
 	default:
 	    return super.onOptionsItemSelected(item);
 	}
+    }
+}
+
+/**
+ * https://github.com/commonsguy/cw-advandroid/tree/master/Camera/Picture
+ * @author commonsguy
+ *
+ */
+class SavePhotoTask extends AsyncTask<byte[], String, String> {
+    
+    Activity activity;
+    
+    public SavePhotoTask(Activity activity)
+    {
+	this.activity = activity;
+    }
+    @Override
+    protected String doInBackground(byte[]... jpeg) {
+	File photo = new File(Environment.getExternalStorageDirectory(),
+		"photo.jpg");
+
+	if (photo.exists()) {
+	    photo.delete();
+	}
+
+	try {
+	    FileOutputStream fos = new FileOutputStream(photo.getPath());
+
+	    fos.write(jpeg[0]);
+	    fos.close();
+	    activity.finish();
+	} catch (java.io.IOException e) {
+	    Log.e("PictureDemo", "Exception in photoCallback", e);
+	}
+
+	return (null);
     }
 }
 

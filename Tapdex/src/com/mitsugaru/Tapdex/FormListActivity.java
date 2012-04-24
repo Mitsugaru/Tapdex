@@ -32,7 +32,7 @@ public class FormListActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.formlist);
+	setContentView(R.layout.formentrylist);
 	Bundle extras = getIntent().getExtras();
 	if (extras != null) {
 	    formName = extras.getString("formName");
@@ -45,7 +45,7 @@ public class FormListActivity extends ListActivity {
 	    this.finish();
 	}
 	//Set header
-	TextView header = (TextView) findViewById(R.id.formHeader);
+	TextView header = (TextView) findViewById(R.id.headerText);
 	header.setText(formName);
 	// Database
 	database = DatabaseHandler.getInstance(this);

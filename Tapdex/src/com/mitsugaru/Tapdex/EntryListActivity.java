@@ -39,7 +39,7 @@ public class EntryListActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.entrylist);
+	setContentView(R.layout.formentrylist);
 	Bundle extras = getIntent().getExtras();
 	if (extras != null) {
 	    formName = extras.getString("formName");
@@ -58,7 +58,7 @@ public class EntryListActivity extends ListActivity {
 	}
 	Log.i(TapdexActivity.TAG, "on create: " + formName + "/" + entryName);
 	// Set header
-	TextView header = (TextView) findViewById(R.id.entryHeader);
+	TextView header = (TextView) findViewById(R.id.headerText);
 	header.setText(entryName);
 	// Database
 	db = DatabaseHandler.getInstance(this);
