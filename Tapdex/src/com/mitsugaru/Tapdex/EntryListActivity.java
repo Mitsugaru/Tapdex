@@ -3,6 +3,7 @@ package com.mitsugaru.Tapdex;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.mitsugaru.Tapdex.DatabaseHandler.FieldData;
@@ -15,12 +16,9 @@ import com.mitsugaru.Tapdex.fields.TextFieldEntry;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -28,11 +26,12 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EntryListActivity extends ListActivity {
     private final Activity activity = this;
     private String formName, entryName;
-    private DatabaseHandler database;
+    private DatabaseHandler db;
     private ArrayList<FieldEntry> entries = new ArrayList<FieldEntry>();
     private FieldEntryAdapter entryAdapter = null;
     private MergeAdapter adapter = null;
@@ -57,11 +56,12 @@ public class EntryListActivity extends ListActivity {
 	    Log.e(TapdexActivity.TAG, "Null extras");
 	    this.finish();
 	}
+	Log.i(TapdexActivity.TAG, "on create: " + formName + "/" + entryName);
 	// Set header
 	TextView header = (TextView) findViewById(R.id.entryHeader);
 	header.setText(entryName);
 	// Database
-	database = DatabaseHandler.getInstance(this);
+	db = DatabaseHandler.getInstance(this);
 	// Adapter
 	adapter = new MergeAdapter();
 	entryAdapter = new FieldEntryAdapter(activity,
@@ -94,10 +94,36 @@ public class EntryListActivity extends ListActivity {
 	super.onResume();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+	if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    // Save changes
+	    saveChanges();
+	}
+
+	return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onStop() {
+	// Save changes
+	saveChanges();
+	super.onStop();
+    }
+    
+    private void saveChanges()
+    {
+	db.clearData(formName, entryName);
+	// Add values for entries
+	for (FieldEntry field : entries) {
+	    db.addData(formName, entryName, field.getData());
+	}
+    }
+
     private void fillEntries() {
 	// Get data and set it to fields
-	final String format = database.getFormat(formName);
-	final List<FieldData> data = database.getData(formName, entryName);
+	final String format = db.getFormat(formName);
+	final List<FieldData> data = db.getData(formName, entryName);
 	final String[] split = format.split("&");
 	int index = 0;
 	for (int i = 0; i < split.length; i += 3) {

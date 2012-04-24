@@ -357,6 +357,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	return found;
     }
 
+    public void clearData(String form, String entry) {
+	int id = getEntryId(form, entry);
+	Log.i(TapdexActivity.TAG, "id: " + id);
+	if (id != -1) {
+	    try {
+		if (db == null || !db.isOpen()) {
+		    db = getWritableDatabase();
+		}
+		if (db.isReadOnly()) {
+		    db.close();
+		    db = getWritableDatabase();
+		}
+		// Drop previous records
+		SQLiteStatement statement = db.compileStatement("DELETE FROM " + Table.FIELDS.getName() + " WHERE entryid=?");
+		statement.bindLong(1, id);
+		statement.execute();
+		statement.close();
+	    } catch (SQLException e) {
+		Log.e(TapdexActivity.TAG, "Error on updating data for entry '"
+			+ entry + "'", e);
+	    }
+	    close();
+	}
+    }
+
     public void addData(String form, String entry, Map<String, Object> data) {
 	int id = getEntryId(form, entry);
 	if (id != -1) {
