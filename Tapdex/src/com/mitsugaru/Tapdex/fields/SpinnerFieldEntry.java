@@ -209,7 +209,7 @@ public class SpinnerFieldEntry extends FieldEntry {
 	if (!list.isEmpty()) {
 	    StringBuilder sb = new StringBuilder();
 	    for (String entry : list) {
-		sb.append(entry + "&");
+		sb.append(entry.replaceAll("&", "") + "&");
 	    }
 	    // Remove trailing ampersand
 	    sb.deleteCharAt(sb.length() - 1);

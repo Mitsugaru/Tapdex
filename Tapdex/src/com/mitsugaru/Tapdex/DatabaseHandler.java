@@ -210,11 +210,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			+ "' of format '" + format + "'");
 	    }
 	    statement.close();
-	    close();
 	} catch (SQLException e) {
 	    Log.e(TapdexActivity.TAG, "Error on creating form '" + name + "'",
 		    e);
 	}
+	close();
     }
 
     public int getFormId(String form) {
@@ -271,11 +271,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			    + entryName + "' for form '" + form + "'");
 		}
 		statement.close();
-		close();
 	    } catch (SQLException e) {
 		Log.e(TapdexActivity.TAG, "Error on creating entry '"
 			+ entryName + "'", e);
 	    }
+	    close();
 	}
     }
 
@@ -375,20 +375,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		statement.bindLong(1, id);
 		String type = (String) data.get("type");
 		statement.bindString(2, type);
-		if (type.equals("TEXT")) {
+		if (type.equalsIgnoreCase("text")) {
 		    statement.bindString(3, (String) data.get("text"));
 		    statement.bindNull(4);
-		} else if (type.equals("RATING")) {
+		} else if (type.equalsIgnoreCase("rating")) {
 		    final String floatString = ""
 			    + ((Float) data.get("value")).floatValue();
 		    statement.bindString(3, floatString);
 		    statement.bindNull(4);
-		} else if (type.equals("CHECK")) {
+		} else if (type.equalsIgnoreCase("check")) {
 		    final String booleanString = ""
 			    + ((Boolean) data.get("checked")).booleanValue();
 		    statement.bindString(3, booleanString);
 		    statement.bindNull(4);
-		} else if (type.equals("SPINNER")) {
+		} else if (type.equalsIgnoreCase("spinner")) {
 		    final String selection = ""
 			    + ((Integer) data.get("position")).intValue();
 		    statement.bindString(3, selection);
@@ -401,12 +401,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			    + entry + "' for form '" + form + "'");
 		}
 		statement.close();
-		close();
 	    } catch (SQLException e) {
 		Log.e(TapdexActivity.TAG, "Error on adding data for entry '"
 			+ entry + "'", e);
 	    }
+	    close();
 	}
+    }
+
+    public List<FieldData> getData(String form, String entry) {
+	List<FieldData> data = new ArrayList<FieldData>();
+	int id = getEntryId(form, entry);
+	if (id != -1) {
+	    try {
+		if (db == null || !db.isOpen()) {
+		    db = getWritableDatabase();
+		}
+		if (db.isReadOnly()) {
+		    db.close();
+		    db = getWritableDatabase();
+		}
+		Cursor cursor = db.rawQuery(
+			"SELECT * FROM " + Table.FIELDS.getName()
+				+ " WHERE entryid='" + id + "';", null);
+		if (cursor.moveToFirst()) {
+		    do {
+			String key = cursor.getString(cursor
+				.getColumnIndex(Field.FIELDS_KEY
+					.getColumnName()));
+			String value = cursor.getString(cursor
+				.getColumnIndex(Field.FIELDS_VALUE
+					.getColumnName()));
+			String dataValue = null;
+			try {
+			    dataValue = cursor.getString(cursor
+				    .getColumnIndex(Field.FIELDS_DATA
+					    .getColumnName()));
+			} catch (SQLException c) {
+			    // IGNORE
+			}
+			data.add(new FieldData(key, value, dataValue));
+		    } while (cursor.moveToNext());
+		}
+		cursor.close();
+	    } catch (SQLException e) {
+		Log.e(TapdexActivity.TAG, "Error on adding data for entry '"
+			+ entry + "'", e);
+	    }
+	    close();
+	}
+	return data;
     }
 
     public List<String> getFormNames() {
@@ -454,7 +498,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    }
 	    try {
 		Cursor cursor = db.rawQuery(
-			"SELECT * FROM " + Table.ENTRY.getName() + " WHERE formid='" + formId +"';", null);
+			"SELECT * FROM " + Table.ENTRY.getName()
+				+ " WHERE formid='" + formId + "';", null);
 		if (cursor.moveToFirst()) {
 		    do {
 			list.add(cursor.getString(cursor
@@ -471,15 +516,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 	return list;
     }
-    
-    public String getFormat(String form)
-    {
+
+    public String getFormat(String form) {
 	String format = "";
 	int formId = getFormId(form);
 	if (formId != -1) {
 	    try {
+		if (db == null || !db.isOpen()) {
+		    db = getReadableDatabase();
+		}
+
+		if (!db.isReadOnly()) {
+		    close();
+		    db = getReadableDatabase();
+		}
 		Cursor cursor = db.rawQuery(
-			"SELECT * FROM " + Table.FORMS.getName() + " WHERE formid='" + formId +"';", null);
+			"SELECT * FROM " + Table.FORMS.getName()
+				+ " WHERE id='" + formId + "';", null);
 		if (cursor.moveToFirst()) {
 		    do {
 			format = cursor.getString(cursor
@@ -549,6 +602,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public String toString() {
 	    return table;
+	}
+    }
+
+    public class FieldData {
+	private String key, value, data;
+
+	public FieldData(String key, String value, String data) {
+	    this.key = key;
+	    this.value = value;
+	    this.data = data;
+	}
+
+	public String getKey() {
+	    return key;
+	}
+
+	public String getValue() {
+	    return value;
+	}
+
+	public String getData() {
+	    return data;
 	}
     }
 }

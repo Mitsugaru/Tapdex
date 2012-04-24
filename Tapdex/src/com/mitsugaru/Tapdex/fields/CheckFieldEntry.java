@@ -14,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CheckFieldEntry extends FieldEntry {
     private TextView label = null;

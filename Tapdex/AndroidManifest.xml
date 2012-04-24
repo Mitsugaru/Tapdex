@@ -24,6 +24,7 @@
         <activity android:name="NewFormActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="FormListActivity"></activity>
         <activity android:name="EntryListActivity"></activity>
+        <activity android:name="NewEntryActivity"></activity>
     </application>
 
 </manifest>

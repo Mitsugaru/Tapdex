@@ -18,9 +18,9 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 public class FormListActivity extends ListActivity {
     String formName = "";
@@ -32,7 +32,7 @@ public class FormListActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.formentrylist);
+	setContentView(R.layout.formlist);
 	Bundle extras = getIntent().getExtras();
 	if (extras != null) {
 	    formName = extras.getString("formName");
@@ -45,7 +45,7 @@ public class FormListActivity extends ListActivity {
 	    this.finish();
 	}
 	//Set header
-	EditText header = (EditText) findViewById(R.id.headerText);
+	TextView header = (TextView) findViewById(R.id.formHeader);
 	header.setText(formName);
 	// Database
 	database = DatabaseHandler.getInstance(this);
@@ -73,7 +73,7 @@ public class FormListActivity extends ListActivity {
 		if (!empty) {
 		    // TODO entry list activity
 		    Intent intent = new Intent(getBaseContext(),
-			    FormListActivity.class);
+			    EntryListActivity.class);
 		    intent.putExtra("formName", formName);
 		    intent.putExtra("entryName", entryNames.get(position));
 		    startActivity(intent);
