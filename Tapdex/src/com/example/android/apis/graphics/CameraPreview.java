@@ -39,6 +39,9 @@ import android.view.WindowManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 // Need the following import to get access to the app resources, since this
 // class is in a sub-package.
@@ -50,7 +53,6 @@ public class CameraPreview extends Activity {
     Camera mCamera;
     int numberOfCameras;
     int cameraCurrentlyLocked;
-    private Activity activity = this;
 
     // The first rear facing camera
     int defaultCameraId;
@@ -130,7 +132,7 @@ public class CameraPreview extends Activity {
 			    new Camera.PictureCallback() {
 				public void onPictureTaken(byte[] data,
 					Camera camera) {
-				    new SavePhotoTask(activity).execute(data);
+				    new SavePhotoTask().execute(data);
 				    camera.startPreview();
 				}
 			    });
@@ -180,17 +182,12 @@ public class CameraPreview extends Activity {
  *
  */
 class SavePhotoTask extends AsyncTask<byte[], String, String> {
-    
-    Activity activity;
-    
-    public SavePhotoTask(Activity activity)
-    {
-	this.activity = activity;
-    }
+    private final static DateFormat dateFormat = new SimpleDateFormat(
+		"MM_dd_yyyy_HH_mm");
     @Override
     protected String doInBackground(byte[]... jpeg) {
 	File photo = new File(Environment.getExternalStorageDirectory(),
-		"photo.jpg");
+		dateFormat.format(new Date()) + ".jpg");
 
 	if (photo.exists()) {
 	    photo.delete();
@@ -201,7 +198,6 @@ class SavePhotoTask extends AsyncTask<byte[], String, String> {
 
 	    fos.write(jpeg[0]);
 	    fos.close();
-	    activity.finish();
 	} catch (java.io.IOException e) {
 	    Log.e("PictureDemo", "Exception in photoCallback", e);
 	}
