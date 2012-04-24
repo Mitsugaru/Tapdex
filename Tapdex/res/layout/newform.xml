@@ -9,7 +9,7 @@
         android:gravity="center|center_horizontal" >
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/formName"
             android:layout_width="88dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.41"
@@ -23,6 +23,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/newform_addfield" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/entryName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:text="@string/newform_entry" >
+
+            <requestFocus />
+        </EditText>
+
     </LinearLayout>
 
     <ListView

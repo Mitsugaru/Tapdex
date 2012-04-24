@@ -7,7 +7,6 @@
     <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -23,6 +22,8 @@
         </activity>
         <activity android:name="com.example.android.apis.graphics.CameraPreview" android:screenOrientation="landscape"></activity>
         <activity android:name="NewFormActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="FormListActivity"></activity>
+        <activity android:name="EntryListActivity"></activity>
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 /**
@@ -117,13 +119,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 	// TODO Auto-generated method stub
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
 	// TODO Auto-generated method stub
-
     }
 
     public boolean tableExists(String tableName) {
@@ -173,16 +173,159 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    db = getWritableDatabase();
 	}
 	// Check forms database
-	if (!tableExists("forms", false)) {
-	    db.execSQL("CREATE TABLE forms (id INTEGER PRIMARY KEY, name TEXT NOT NULL, format TEXT NOT NULL, UNIQUE(name));");
+	if (!tableExists(Table.FORMS.getName(), false)) {
+	    db.execSQL("CREATE TABLE "
+		    + Table.FORMS.getName()
+		    + " (id INTEGER PRIMARY KEY, name TEXT NOT NULL, format TEXT NOT NULL, UNIQUE(name));");
 	}
-	if (!tableExists("entry")) {
-	    db.execSQL("CREATE TABLE entry (id INTEGER PRIMARY KEY, formid INTEGER NOT NULL);");
+	if (!tableExists(Table.ENTRY.getName())) {
+	    db.execSQL("CREATE TABLE "
+		    + Table.ENTRY.getName()
+		    + " (id INTEGER PRIMARY KEY, formid INTEGER NOT NULL, name TEXT NOT NULL);");
 	}
-	if (!tableExists("fields", false)) {
-	    db.execSQL("CREATE TABLE fields (row INTEGER PRIMARY KEY, entryid INTEGER NOT NULL, fieldKey TEXT, fieldValue TEXT);");
+	if (!tableExists(Table.FIELDS.getName(), false)) {
+	    db.execSQL("CREATE TABLE "
+		    + Table.FIELDS.getName()
+		    + " (row INTEGER PRIMARY KEY, entryid INTEGER NOT NULL, fieldKey TEXT NOT NULL, fieldValue TEXT NOT NULL, fieldData TEXT);");
 	}
 	close();
+    }
+
+    public void createForm(String name, String format) {
+	if (db == null || !db.isOpen()) {
+	    db = getWritableDatabase();
+	}
+	if (db.isReadOnly()) {
+	    db.close();
+	    db = getWritableDatabase();
+	}
+	try {
+	    SQLiteStatement statement = db.compileStatement("INSERT INTO "
+		    + Table.FORMS.getName() + " (name, format) VALUES(?,?);");
+	    statement.bindString(1, name);
+	    statement.bindString(2, format);
+	    long row = statement.executeInsert();
+	    if (row == -1) {
+		Log.e(TapdexActivity.TAG, "Could not insert form '" + name
+			+ "' of format '" + format + "'");
+	    }
+	    statement.close();
+	    close();
+	} catch (SQLException e) {
+	    Log.e(TapdexActivity.TAG, "Error on creating form '" + name + "'",
+		    e);
+	}
+    }
+
+    public int getFormId(String form) {
+	int id = -1;
+	if (db == null || !db.isOpen()) {
+	    db = getReadableDatabase();
+	}
+
+	if (!db.isReadOnly()) {
+	    close();
+	    db = getReadableDatabase();
+	}
+	try {
+	    Cursor cursor = db.rawQuery(
+		    "SELECT * FROM " + Table.FORMS.getName(), null);
+	    if (cursor.moveToFirst()) {
+		do {
+		    if (form.equals(cursor.getString(cursor
+			    .getColumnIndex(Field.FORMS_NAME.getColumnName())))) {
+			id = cursor.getInt(cursor.getColumnIndex(Field.FORMS_ID
+				.getColumnName()));
+		    }
+		} while (cursor.moveToNext());
+	    }
+	    cursor.close();
+	} catch (SQLiteException e) {
+
+	}
+	close();
+	return id;
+    }
+
+    public void createEntry(String form, String entryName) {
+	int id = getFormId(form);
+	if (id == -1) {
+	    Log.e(TapdexActivity.TAG, "Missing form '" + form + "'");
+	} else {
+	    try {
+		if (db == null || !db.isOpen()) {
+		    db = getWritableDatabase();
+		}
+		if (db.isReadOnly()) {
+		    db.close();
+		    db = getWritableDatabase();
+		}
+		SQLiteStatement statement = db.compileStatement("INSERT INTO "
+			+ Table.ENTRY.getName()
+			+ " (formid, name) VALUES(?,?);");
+		statement.bindLong(1, id);
+		statement.bindString(2, entryName);
+		long row = statement.executeInsert();
+		if (row == -1) {
+		    Log.e(TapdexActivity.TAG, "Could not insert entry '"
+			    + entryName + "' for form '" + form + "'");
+		}
+		statement.close();
+		close();
+	    } catch (SQLException e) {
+		Log.e(TapdexActivity.TAG, "Error on creating entry '"
+			+ entryName + "'", e);
+	    }
+	}
+    }
+
+    public boolean entryNameExistsForForm(String form, String entry) {
+	int id = getFormId(form);
+	if (id == -1) {
+	    Log.e(TapdexActivity.TAG, "Missing form '" + form + "'");
+	} else {
+	    int entryId = getEntryId(form, entry);
+	    if (entryId != -1) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public int getEntryId(String form, String entry) {
+	int id = -1;
+	int formId = getFormId(form);
+	if (formId == -1) {
+	    return id;
+	}
+	if (db == null || !db.isOpen()) {
+	    db = getReadableDatabase();
+	}
+
+	if (!db.isReadOnly()) {
+	    close();
+	    db = getReadableDatabase();
+	}
+	try {
+	    Cursor cursor = db.rawQuery(
+		    "SELECT * FROM " + Table.ENTRY.getName()
+			    + " WHERE formid='" + formId + "';", null);
+	    if (cursor.moveToFirst()) {
+		do {
+		    if (entry.equals(cursor.getString(cursor
+			    .getColumnIndex(Field.ENTRY_NAME.getColumnName())))) {
+			id = cursor.getInt(cursor.getColumnIndex(Field.ENTRY_ID
+				.getColumnName()));
+		    }
+		} while (cursor.moveToNext());
+	    }
+	    cursor.close();
+	} catch (SQLiteException e) {
+	    Log.e(TapdexActivity.TAG, "Error on getting entry id of '" + entry
+		    + "'", e);
+	}
+	close();
+	return id;
     }
 
     public boolean formNameExists(String name) {
@@ -196,11 +339,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    db = getReadableDatabase();
 	}
 	try {
-	    Cursor cursor = db.rawQuery("SELECT * FROM forms", null);
+	    Cursor cursor = db.rawQuery(
+		    "SELECT * FROM " + Table.FORMS.getName() + ";", null);
 	    if (cursor.moveToFirst()) {
 		do {
 		    if (name.equals(cursor.getString(cursor
-			    .getColumnIndex("name")))) {
+			    .getColumnIndex(Field.FORMS_NAME.getColumnName())))) {
 			found = true;
 		    }
 		} while (cursor.moveToNext());
@@ -211,6 +355,58 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 	close();
 	return found;
+    }
+
+    public void addData(String form, String entry, Map<String, Object> data) {
+	int id = getEntryId(form, entry);
+	if (id != -1) {
+	    try {
+		if (db == null || !db.isOpen()) {
+		    db = getWritableDatabase();
+		}
+		if (db.isReadOnly()) {
+		    db.close();
+		    db = getWritableDatabase();
+		}
+		SQLiteStatement statement = db
+			.compileStatement("INSERT INTO "
+				+ Table.FIELDS.getName()
+				+ " (entryid, fieldKey, fieldValue, fieldData) VALUES(?,?,?,?);");
+		statement.bindLong(1, id);
+		String type = (String) data.get("type");
+		statement.bindString(2, type);
+		if (type.equals("TEXT")) {
+		    statement.bindString(3, (String) data.get("text"));
+		    statement.bindNull(4);
+		} else if (type.equals("RATING")) {
+		    final String floatString = ""
+			    + ((Float) data.get("value")).floatValue();
+		    statement.bindString(3, floatString);
+		    statement.bindNull(4);
+		} else if (type.equals("CHECK")) {
+		    final String booleanString = ""
+			    + ((Boolean) data.get("checked")).booleanValue();
+		    statement.bindString(3, booleanString);
+		    statement.bindNull(4);
+		} else if (type.equals("SPINNER")) {
+		    final String selection = ""
+			    + ((Integer) data.get("position")).intValue();
+		    statement.bindString(3, selection);
+		    final String spinner = (String) data.get("list");
+		    statement.bindString(4, spinner);
+		}
+		long row = statement.executeInsert();
+		if (row == -1) {
+		    Log.e(TapdexActivity.TAG, "Could not insert entry '"
+			    + entry + "' for form '" + form + "'");
+		}
+		statement.close();
+		close();
+	    } catch (SQLException e) {
+		Log.e(TapdexActivity.TAG, "Error on adding data for entry '"
+			+ entry + "'", e);
+	    }
+	}
     }
 
     public List<String> getFormNames() {
@@ -224,22 +420,80 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    db = getReadableDatabase();
 	}
 	try {
-	    Cursor cursor = db.rawQuery("SELECT * FROM forms", null);
+	    Cursor cursor = db.rawQuery(
+		    "SELECT * FROM " + Table.FORMS.getName() + ";", null);
 	    /*
 	     * http://stackoverflow.com/questions/4920528/iterate-through-rows-from
 	     * -sqlite-query
 	     */
 	    if (cursor.moveToFirst()) {
 		do {
-		    list.add(cursor.getString(cursor.getColumnIndex("name")));
+		    list.add(cursor.getString(cursor
+			    .getColumnIndex(Field.FORMS_NAME.getColumnName())));
 		} while (cursor.moveToNext());
 	    }
 	    cursor.close();
 	} catch (SQLiteException e) {
-
+	    Log.e(TapdexActivity.TAG, "Error on getting form names", e);
 	}
 	close();
 	return list;
+    }
+
+    public List<String> getEntryNames(String formName) {
+	List<String> list = new ArrayList<String>();
+	int formId = getFormId(formName);
+	if (formId != -1) {
+	    if (db == null || !db.isOpen()) {
+		db = getReadableDatabase();
+	    }
+
+	    if (!db.isReadOnly()) {
+		close();
+		db = getReadableDatabase();
+	    }
+	    try {
+		Cursor cursor = db.rawQuery(
+			"SELECT * FROM " + Table.ENTRY.getName() + " WHERE formid='" + formId +"';", null);
+		if (cursor.moveToFirst()) {
+		    do {
+			list.add(cursor.getString(cursor
+				.getColumnIndex(Field.ENTRY_NAME
+					.getColumnName())));
+		    } while (cursor.moveToNext());
+		}
+		cursor.close();
+	    } catch (SQLiteException e) {
+		Log.e(TapdexActivity.TAG, "Error on getting format for form '"
+			+ formName + "'", e);
+	    }
+	    close();
+	}
+	return list;
+    }
+    
+    public String getFormat(String form)
+    {
+	String format = "";
+	int formId = getFormId(form);
+	if (formId != -1) {
+	    try {
+		Cursor cursor = db.rawQuery(
+			"SELECT * FROM " + Table.FORMS.getName() + " WHERE formid='" + formId +"';", null);
+		if (cursor.moveToFirst()) {
+		    do {
+			format = cursor.getString(cursor
+				.getColumnIndex(Field.FORMS_FORMAT
+					.getColumnName()));
+		    } while (cursor.moveToNext());
+		}
+		cursor.close();
+	    } catch (SQLiteException e) {
+
+	    }
+	    close();
+	}
+	return format;
     }
 
     public enum Field {
@@ -247,10 +501,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	FORMS_ID(Table.FORMS, "id", Type.INTEGER), FORMS_NAME(Table.FORMS,
 		"name", Type.STRING), FORMS_FORMAT(Table.FORMS, "format",
 		Type.STRING), ENTRY_ID(Table.ENTRY, "id", Type.INTEGER), ENTRY_FORM_ID(
-		Table.ENTRY, "formid", Type.INTEGER), FIELDS_ENTRY_ID(
-		Table.FIELDS, "entryid", Type.INTEGER), FIELDS_KEY(
-		Table.FIELDS, "fieldKey", Type.STRING), FIELDS_VALUE(
-		Table.FIELDS, "fieldValue", Type.STRING);
+		Table.ENTRY, "formid", Type.INTEGER), ENTRY_NAME(Table.ENTRY,
+		"name", Type.STRING), FIELDS_ENTRY_ID(Table.FIELDS, "entryid",
+		Type.INTEGER), FIELDS_KEY(Table.FIELDS, "fieldKey", Type.STRING), FIELDS_VALUE(
+		Table.FIELDS, "fieldValue", Type.STRING), FIELDS_DATA(
+		Table.FIELDS, "fieldData", Type.STRING);
 
 	private final Table table;
 	private final String columnname;

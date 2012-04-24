@@ -14,14 +14,17 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class TapdexActivity extends ListActivity {
     // Class variables
@@ -29,6 +32,8 @@ public class TapdexActivity extends ListActivity {
     public static final String TAG = "TAPDEX";
     private DatabaseHandler database;
     private List<String> formNames = new ArrayList<String>();
+    private ArrayAdapter<String> adapter;
+    private boolean empty = false;
 
     /** Called when the activity is first created. */
     @Override
@@ -37,11 +42,6 @@ public class TapdexActivity extends ListActivity {
 	setContentView(R.layout.main);
 	// Database
 	database = new DatabaseHandler(this);
-	// Adapter
-	formNames = database.getFormNames();
-	ListAdapter adapter = new ArrayAdapter<String>(this,
-		android.R.layout.simple_list_item_1, formNames);
-	setListAdapter(adapter);
 	// Animation
 	AnimationSet set = new AnimationSet(true);
 
@@ -58,7 +58,41 @@ public class TapdexActivity extends ListActivity {
 	LayoutAnimationController controller = new LayoutAnimationController(
 		set, 0.5f);
 	ListView listView = getListView();
+	listView.setOnItemClickListener(new OnItemClickListener() {
+
+	    @Override
+	    public void onItemClick(AdapterView<?> arg0, View arg1,
+		    int position, long arg3) {
+		if (!empty) {
+		    Intent intent = new Intent(getBaseContext(),
+			    FormListActivity.class);
+		    intent.putExtra("formName", formNames.get(position));
+		    startActivity(intent);
+		}
+	    }
+
+	});
 	listView.setLayoutAnimation(controller);
+    }
+
+    @Override
+    public void onResume() {
+	// Adapter
+	formNames = database.getFormNames();
+	if (formNames.isEmpty()) {
+	    empty = true;
+	    formNames.add("No forms available! :(");
+	    formNames.add("To make a new form:");
+	    formNames.add("1. Tap the menu key.");
+	    formNames.add("2. Tap 'New Form'");
+	    formNames
+		    .add("3. Name and design your new form with the fields you want.");
+
+	}
+	adapter = new ArrayAdapter<String>(this,
+		android.R.layout.simple_list_item_1, formNames);
+	setListAdapter(adapter);
+	super.onResume();
     }
 
     @Override

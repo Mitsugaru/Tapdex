@@ -26,7 +26,9 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class NewFormActivity extends ListActivity {
     private static final CharSequence[] fields = new CharSequence[] { "Text",
@@ -35,7 +37,9 @@ public class NewFormActivity extends ListActivity {
     private ArrayList<FieldEntry> entries = new ArrayList<FieldEntry>();
     private FieldEntryAdapter entryAdapter = null;
     private MergeAdapter adapter = null;
+    private EditText formName, entryName;
     private int count = 0;
+    private DatabaseHandler db;
 
     /** Called when the activity is first created. */
     @Override
@@ -52,7 +56,9 @@ public class NewFormActivity extends ListActivity {
 		showAddFieldDialog();
 	    }
 	});
-	//Adapters
+	formName = (EditText) findViewById(R.id.formName);
+	entryName = (EditText) findViewById(R.id.entryName);
+	// Adapters
 	adapter = new MergeAdapter();
 	entryAdapter = new FieldEntryAdapter(activity,
 		android.R.layout.simple_list_item_1, entries);
@@ -75,8 +81,8 @@ public class NewFormActivity extends ListActivity {
 		set, 0.5f);
 	ListView listView = getListView();
 	listView.setLayoutAnimation(controller);
-	//TODO Database
-	//db = new DatabaseHandler(this);
+	// TODO Database
+	db = DatabaseHandler.getInstance(this);
     }
 
     private void showAddFieldDialog() {
@@ -124,10 +130,35 @@ public class NewFormActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
 	case R.id.createForm: {
+	    String name = formName.getEditableText().toString();
+	    if (db.formNameExists(name)) {
+		Toast toast = Toast.makeText(activity, "Form '" + name
+			+ "' already exists!", Toast.LENGTH_SHORT);
+		toast.show();
+	    } else {
+		int id = 0;
+		StringBuilder sb = new StringBuilder();
+		for (FieldEntry field : entries) {
+		    sb.append(field.getName().replaceAll("&", "") + "&" + id++
+			    + "&" + field.getType().name() + "&");
+		}
+		// Remove trailing ampersand
+		sb.deleteCharAt(sb.length() - 1);
+		db.createForm(name, sb.toString());
+		// Add first entry
+		String entry = entryName.getEditableText().toString();
+		db.createEntry(name, entry);
+		// Add values for entry
+		for(FieldEntry field: entries)
+		{
+		    db.addData(name, entry, field.getData());
+		}
+		activity.finish();
+	    }
 	    return true;
 	}
 	default:
-	    return true;
+	    return false;
 	}
     }
 }

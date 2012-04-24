@@ -6,5 +6,6 @@
     <string name="camera_alert">No other camera available.</string>
     <string name="newform_name">Form Name</string>
     <string name="newform_addfield">Add Field</string>
+    <string name="newform_entry">Entry Name</string>
 
 </resources>

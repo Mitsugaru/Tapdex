@@ -95,16 +95,12 @@ public class CheckFieldEntry extends FieldEntry {
 
 	    @Override
 	    public void onClick(View arg0) {
-		if(checkbox.isChecked())
+		if(!checkbox.isChecked())
 		{
-		    Toast toast = Toast.makeText(context, "disabled", Toast.LENGTH_SHORT);
-		    toast.show();
 		    checked = false;
 		}
 		else
 		{
-		    Toast toast = Toast.makeText(context, "enabled", Toast.LENGTH_SHORT);
-		    toast.show();
 		    checked = true;
 		}
 	    }
