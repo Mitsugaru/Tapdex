@@ -17,6 +17,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -71,7 +72,7 @@ public class FormListActivity extends ListActivity {
 	    public void onItemClick(AdapterView<?> arg0, View arg1,
 		    int position, long arg3) {
 		if (!empty) {
-		    // TODO entry list activity
+		    // Entry list activity
 		    Intent intent = new Intent(getBaseContext(),
 			    EntryListActivity.class);
 		    intent.putExtra("formName", formName);
