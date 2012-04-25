@@ -88,6 +88,10 @@ public class TapdexActivity extends ListActivity {
 		    .add("3. Name and design your new form with the fields you want.");
 
 	}
+	else
+	{
+	    empty = false;
+	}
 	adapter = new ArrayAdapter<String>(this,
 		android.R.layout.simple_list_item_1, formNames);
 	setListAdapter(adapter);

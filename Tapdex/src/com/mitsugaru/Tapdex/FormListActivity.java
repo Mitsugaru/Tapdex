@@ -107,6 +107,10 @@ public class FormListActivity extends ListActivity {
 		    .add("3. Name your new entry and enter data into fields.");
 
 	}
+	else
+	{
+	    empty = false;
+	}
 	adapter = new ArrayAdapter<String>(this,
 		android.R.layout.simple_list_item_1, entryNames);
 	setListAdapter(adapter);
